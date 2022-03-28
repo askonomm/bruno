@@ -90,6 +90,11 @@ jobs:
 
       - name: Build a native image
         run: lein native
+        
+      - name: Compress binary
+        uses: svenstaro/upx-action@v2
+        with:
+          file: bruno
 
       - name: "Publish"
         uses: actions/upload-artifact@v2-preview
