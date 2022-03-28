@@ -4,6 +4,7 @@
     [clojure.java.io :as io]
     [clojure.java.shell :as sh]
     [hiccup.core :as h]
+    [hiccup.page :as hpage]
     [sci.core :as sci]
     [markdown.core :as md])
   (:import (java.io File))
@@ -159,6 +160,18 @@
      (h/html (sci/eval-string partial {:bindings bindings})))))
 
 
+(defn page
+  [opts & contents]
+  (if-not (map? opts)
+    (hpage/html5 {} contents)
+    (hpage/html5 opts contents)))
+
+
+(def bindings
+  {'page    page
+   'partial load-partial})
+
+
 (defn build-content-items!
   []
   (let [layouts (get-layouts)]
@@ -177,9 +190,9 @@
         (println "Writing " (:slug item))
         (io/make-parents write-path)
         (spit write-path (h/html (sci/eval-string (:contents layout)
-                                                  {:bindings {'post    item
-                                                              'is-post true
-                                                              'partial load-partial}})))))))
+                                                  {:bindings (merge bindings
+                                                                    {'post    item
+                                                                     'is-post true})})))))))
 
 
 (defn build-pages!
@@ -193,14 +206,15 @@
       (println "Writing " (:slug page))
       (io/make-parents write-path)
       (spit write-path (h/html (sci/eval-string (:contents page)
-                                                {:bindings {'is-page true
-                                                            'slug    (:slug page)
-                                                            'partial load-partial}}))))))
+                                                {:bindings (merge bindings
+                                                                  {'is-page true
+                                                                   'page    page})}))))))
 
 
 
 (defn -main [& args]
   (println "Thinking ...")
-  (alter-var-root #'*directory* (constantly "./resources/test"))
+  (alter-var-root #'*directory* (constantly (get-current-dir)))
   (build-content-items!)
-  (build-pages!))
+  (build-pages!)
+  (System/exit 0))

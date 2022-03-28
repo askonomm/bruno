@@ -1,3 +1,5 @@
+[![Release](https://github.com/askonomm/bruno/actions/workflows/release.yml/badge.svg)](https://github.com/askonomm/bruno/actions/workflows/release.yml)
+
 # Bruno
 
 A static site generator written in Clojure that uses Clojure for templating as well thus being the perfect static site
