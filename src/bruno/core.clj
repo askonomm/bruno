@@ -122,7 +122,7 @@
   ""
   []
   (pmap (fn [item]
-          {:slug     (slug-from-path *directory* (:path item))
+          {:slug     (str (slug-from-path (:path item)) ".html")
            :contents (slurp (:path item))})
         (->> (scan *directory*)
              (filter #(string/ends-with? (:path %) ".html.clj")))))
@@ -160,36 +160,47 @@
 
 
 (defn build-content-items!
-  [content-items layouts]
-  (doseq [item content-items]
-    (let [write-path  (str *directory*
-                           File/separatorChar
-                           "public"
-                           File/separatorChar
-                           (:slug item)
-                           File/separatorChar
-                           "index.html")
-          layout-name (or (:layout item) "default")
-          layout      (->> layouts
-                           (filter #(= (:name %) layout-name))
-                           first)]
-      (println "Writing " (:slug item))
-      (io/make-parents write-path)
-      (spit write-path (h/html (sci/eval-string (:contents layout)
-                                                {:bindings {'post    item
-                                                            'is-post true
-                                                            'partial load-partial}}))))))
+  []
+  (let [layouts (get-layouts)]
+    (doseq [item (get-content-items)]
+      (let [write-path  (str *directory*
+                             File/separatorChar
+                             "public"
+                             File/separatorChar
+                             (:slug item)
+                             File/separatorChar
+                             "index.html")
+            layout-name (or (:layout item) "default")
+            layout      (->> layouts
+                             (filter #(= (:name %) layout-name))
+                             first)]
+        (println "Writing " (:slug item))
+        (io/make-parents write-path)
+        (spit write-path (h/html (sci/eval-string (:contents layout)
+                                                  {:bindings {'post    item
+                                                              'is-post true
+                                                              'partial load-partial}})))))))
 
 
 (defn build-pages!
-  [directory pages])
+  []
+  (doseq [page (get-pages)]
+    (let [write-path (str *directory*
+                          File/separatorChar
+                          "public"
+                          File/separatorChar
+                          (:slug page))]
+      (println "Writing " (:slug page))
+      (io/make-parents write-path)
+      (spit write-path (h/html (sci/eval-string (:contents page)
+                                                {:bindings {'is-page true
+                                                            'slug    (:slug page)
+                                                            'partial load-partial}}))))))
+
 
 
 (defn -main [& args]
   (println "Thinking ...")
   (alter-var-root #'*directory* (constantly "./resources/test"))
-  (let [content-items (get-content-items)
-        pages         (get-pages)
-        layouts       (get-layouts)]
-    (build-content-items! content-items layouts)
-    (build-pages! pages)))
+  (build-content-items!)
+  (build-pages!))

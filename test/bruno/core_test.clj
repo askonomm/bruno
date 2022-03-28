@@ -4,6 +4,7 @@
     [bruno.core :as core]
     [clojure.string :as string]))
 
+(alter-var-root #'core/*directory* (constantly "./resources/test"))
 
 (deftest triml-test
   (testing "Trimming one character from the left of a string"
@@ -54,21 +55,21 @@
             {:title "This is a test file 2"
              :slug  "test-dir/test-file-2"
              :entry "<p>Just another test file. Again.</p>"}]
-           (core/get-content-items "./resources/test")))))
+           (core/get-content-items)))))
 
 
 (deftest get-pages-test
   (testing "Getting pages"
-    (is (= [{:slug     "test-page"
+    (is (= [{:slug     "test-page.html"
              :contents "[:div \"This is a test page.\"]"}]
-           (core/get-pages "./resources/test")))))
+           (core/get-pages)))))
 
 
 (deftest get-layouts-test
   (testing "Getting layouts"
     (is (= [{:name     "default"
-             :contents "[:div \"This is a test layout.\"]"}]
-           (core/get-layouts "./resources/test")))))
+             :contents "(declare ^:dynamic post)\n(declare ^:dynamic partial)\n\n[:div\n (partial \"header\" {'test \"this\"})\n [:div.post\n  [:h2 (:title post)]\n  [:div.entry (:entry post)]]]"}]
+           (core/get-layouts)))))
 
 
 (deftest parse-md-metadata-test
