@@ -14,7 +14,7 @@
             [lein-shell "0.5.0"]]
   :aliases {"native"
             ["shell"
-             "native-image" "--report-unsupported-elements-at-runtime" "--initialize-at-build-time=." "--no-fallback"
+             "native-image" "--report-unsupported-elements-at-runtime" "--no-fallback"
              "-jar" "./target/uberjar/bruno.jar"]}
   :main bruno.core
   :min-lein-version "2.0.0"
