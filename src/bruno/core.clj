@@ -12,6 +12,7 @@
 
 
 (def ^:dynamic *directory* nil)
+(declare bindings)
 
 
 (defn triml
@@ -151,16 +152,16 @@
 (defn load-partial
   ([name]
    (load-partial name {}))
-  ([name bindings]
+  ([name local-bindings]
    (let [partial (slurp (str *directory*
                              File/separatorChar
                              "_partials"
                              File/separatorChar
                              name ".clj"))]
-     (h/html (sci/eval-string partial {:bindings bindings})))))
+     (h/html (sci/eval-string partial {:bindings (merge bindings local-bindings)})))))
 
 
-(defn page
+(defn document
   [opts & contents]
   (if-not (map? opts)
     (hpage/html5 {} opts contents)
@@ -168,31 +169,33 @@
 
 
 (def bindings
-  {'page    page
-   'partial load-partial})
+  {'document    document
+   'include-js  hpage/include-js
+   'include-css hpage/include-css
+   'partial     load-partial})
 
 
 (defn build-content-items!
   []
   (let [layouts (get-layouts)]
     (doseq [item (get-content-items)]
-      (let [write-path  (str *directory*
-                             File/separatorChar
-                             "public"
-                             File/separatorChar
-                             (:slug item)
-                             File/separatorChar
-                             "index.html")
-            layout-name (or (:layout item) "default")
-            layout      (->> layouts
-                             (filter #(= (:name %) layout-name))
-                             first)]
+      (let [write-path (str *directory*
+                            File/separatorChar
+                            "public"
+                            File/separatorChar
+                            (:slug item)
+                            File/separatorChar
+                            "index.html")
+            layout     (->> layouts
+                            (filter #(= (:name %) (or (:layout item) "default")))
+                            first)]
         (println "Writing " (:slug item))
         (io/make-parents write-path)
-        (spit write-path (h/html (sci/eval-string (:contents layout)
-                                                  {:bindings (merge bindings
-                                                                    {'post    item
-                                                                     'is-post true})})))))))
+        (spit write-path (h/html (sci/eval-string
+                                   (:contents layout)
+                                   {:bindings (merge bindings
+                                                     {'post    item
+                                                      'is-post true})})))))))
 
 
 (defn build-pages!
@@ -205,11 +208,11 @@
                           (:slug page))]
       (println "Writing " (:slug page))
       (io/make-parents write-path)
-      (spit write-path (h/html (sci/eval-string (:contents page)
-                                                {:bindings (merge bindings
-                                                                  {'is-page true
-                                                                   'page    page})}))))))
-
+      (spit write-path (h/html (sci/eval-string
+                                 (:contents page)
+                                 {:bindings (merge bindings
+                                                   {'is-page true
+                                                    'page    page})}))))))
 
 
 (defn -main [& args]
