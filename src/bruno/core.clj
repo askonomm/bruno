@@ -163,7 +163,7 @@
 (defn page
   [opts & contents]
   (if-not (map? opts)
-    (hpage/html5 {} contents)
+    (hpage/html5 {} opts contents)
     (hpage/html5 opts contents)))
 
 
