@@ -158,7 +158,8 @@
                              "_partials"
                              File/separatorChar
                              name ".clj"))]
-     (h/html (sci/eval-string partial {:bindings (merge bindings local-bindings)})))))
+     (h/html (sci/eval-string partial {:bindings (merge bindings
+                                                        local-bindings)})))))
 
 
 (defn document
@@ -169,10 +170,10 @@
 
 
 (def bindings
-  {'document    document
-   'include-js  hpage/include-js
-   'include-css hpage/include-css
-   'partial     load-partial})
+  {'document     document
+   'include-js   hpage/include-js
+   'include-css  hpage/include-css
+   'load-partial load-partial})
 
 
 (defn build-content-items!
