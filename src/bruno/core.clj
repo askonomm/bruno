@@ -103,7 +103,8 @@
 
 
 (defn slug-from-path
-  ""
+  "Takes in a full `path` to a file and returns the relative URL slug
+  from it."
   [path]
   (let [full-root-dir (.getCanonicalPath (io/file *directory*))]
     (-> (string/replace path full-root-dir "")
@@ -113,7 +114,7 @@
 
 
 (defn get-content-items
-  ""
+  "Gets a collection of content items."
   []
   (pmap (fn [item]
           (let [file-contents (slurp (:path item))]
@@ -125,7 +126,7 @@
 
 
 (defn get-pages
-  ""
+  "Gets a collection of pages."
   []
   (pmap (fn [item]
           (let [ext (-> (:file-ext item)
@@ -138,7 +139,7 @@
 
 
 (defn get-layouts
-  ""
+  "Gets a collection of layouts."
   []
   (pmap (fn [item]
           {:name     (-> (string/split (:file-name item) #"\.")
@@ -150,6 +151,7 @@
 
 
 (defn- get-current-dir
+  "Returns the current working directory."
   []
   (-> (:out (sh/sh "pwd"))
       (string/replace "\n" "")
@@ -157,6 +159,7 @@
 
 
 (defn load-partial
+  "Renders a template partial."
   ([name]
    (load-partial name {}))
   ([name local-bindings]
@@ -170,6 +173,7 @@
 
 
 (defn document
+  "Wraps `contents` within a valid HTML document."
   [opts & contents]
   (if-not (map? opts)
     (hpage/html5 {} opts contents)
@@ -185,6 +189,9 @@
 
 
 (defn build-content-items!
+  "Builds all the content items with the layout specified
+  in the individual content items, or with the \"default\"
+  layout if none was found in the item."
   []
   (let [layouts (get-layouts)]
     (doseq [item (get-content-items)]
@@ -208,6 +215,7 @@
 
 
 (defn build-pages!
+  "Builds all the pages."
   []
   (doseq [page (get-pages)]
     (let [write-path (str *directory*
@@ -220,8 +228,9 @@
       (spit write-path (h/html (sci/eval-string
                                  (:contents page)
                                  {:bindings (merge bindings
-                                                   {'is-page true
-                                                    'page    page})}))))))
+                                                   {'is-page                    true
+                                                    (symbol "is-" (:slug page)) true
+                                                    'page                       page})}))))))
 
 
 (defn -main [& args]
