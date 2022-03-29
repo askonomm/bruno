@@ -11,7 +11,9 @@
   (:gen-class))
 
 
-(def ^:dynamic *directory* nil)
+(def ^:dynamic *src-directory* nil)
+(def ^:dynamic *target-directory* nil)
+
 (declare bindings)
 
 
@@ -106,7 +108,7 @@
   "Takes in a full `path` to a file and returns the relative URL slug
   from it."
   [path]
-  (let [full-root-dir (.getCanonicalPath (io/file *directory*))]
+  (let [full-root-dir (.getCanonicalPath (io/file *src-directory*))]
     (-> (string/replace path full-root-dir "")
         (triml "/")
         (string/split #"\.")
@@ -121,7 +123,7 @@
             (merge (parse-md-metadata file-contents)
                    {:slug  (slug-from-path (:path item))
                     :entry (parse-md-entry file-contents)})))
-        (->> (scan *directory*)
+        (->> (scan *src-directory*)
              (filter #(string/ends-with? (:path %) ".md")))))
 
 
@@ -133,7 +135,7 @@
                         (string/replace ".clj" ""))]
             {:slug     (str (slug-from-path (:path item)) "." ext)
              :contents (slurp (:path item))}))
-        (->> (scan *directory*)
+        (->> (scan *src-directory*)
              (filter #(or (= (:file-ext %) "html.clj")
                           (= (:file-ext %) "xml.clj"))))))
 
@@ -146,7 +148,7 @@
                          first
                          (triml "/"))
            :contents (slurp (:path item))})
-        (->> (scan (str *directory* File/separatorChar "_layouts"))
+        (->> (scan (str *src-directory* File/separatorChar "_layouts"))
              (filter #(string/ends-with? (:path %) ".clj")))))
 
 
@@ -163,7 +165,7 @@
   ([name]
    (load-partial name {}))
   ([name local-bindings]
-   (let [partial (slurp (str *directory*
+   (let [partial (slurp (str *src-directory*
                              File/separatorChar
                              "_partials"
                              File/separatorChar
@@ -195,9 +197,7 @@
   []
   (let [layouts (get-layouts)]
     (doseq [item (get-content-items)]
-      (let [write-path (str *directory*
-                            File/separatorChar
-                            "public"
+      (let [write-path (str *target-directory*
                             File/separatorChar
                             (:slug item)
                             File/separatorChar
@@ -218,9 +218,7 @@
   "Builds all the pages."
   []
   (doseq [page (get-pages)]
-    (let [write-path (str *directory*
-                          File/separatorChar
-                          "public"
+    (let [write-path (str *target-directory*
                           File/separatorChar
                           (:slug page))]
       (println "Writing " (:slug page))
@@ -235,7 +233,13 @@
 
 (defn -main [& args]
   (println "Thinking ...")
-  (alter-var-root #'*directory* (constantly (get-current-dir)))
-  (build-content-items!)
-  (build-pages!)
-  (System/exit 0))
+  (let [current-dir (get-current-dir)
+        src-dir     (if (.isDirectory (io/file (str current-dir File/separatorChar "src")))
+                      (str current-dir File/separatorChar "src")
+                      current-dir)
+        target-dir  (str current-dir File/separatorChar "public")]
+    (alter-var-root #'*src-directory* (constantly src-dir))
+    (alter-var-root #'*target-directory* (constantly target-dir))
+    (build-content-items!)
+    (build-pages!)
+    (System/exit 0)))
