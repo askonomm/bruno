@@ -90,7 +90,7 @@ jobs:
 
       - name: Build a native image
         run: lein native
-        
+
       - name: Compress binary
         uses: svenstaro/upx-action@v2
         with:
@@ -111,4 +111,52 @@ jobs:
           upload_url: ${{steps.create_release.outputs.upload_url}}
           asset_path: bruno
           asset_name: bruno-linux
+          asset_content_type: application/octet-stream
+
+  build-native-image-macos:
+    runs-on: macos-latest
+    needs: [ build-native-image-linux ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build a uberjar
+        run: lein uberjar
+
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@5.0
+        with:
+          graalvm: '22.0.0.2'
+          java: 'java17'
+          arch: 'amd64'
+
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+
+      - name: Build a native image
+        run: lein native
+
+      - name: Compress binary
+        uses: svenstaro/upx-action@v2
+        with:
+          file: bruno
+
+      - name: "Publish"
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: bruno-macos
+          path: bruno
+
+      - name: "Upload"
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: bruno
+          asset_name: bruno-macos
           asset_content_type: application/octet-stream
