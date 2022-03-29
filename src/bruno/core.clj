@@ -238,6 +238,23 @@
     (io/delete-file path)))
 
 
+(defn copy-assets!
+  "Copies all assets to the `*target-directory*`."
+  []
+  (doseq [{:keys [path file-name file-ext]}
+          (->> (scan *src-directory*)
+               (filter #(not (or (= "clj" (:file-ext %))
+                                 (= "html.clj" (:file-ext %))
+                                 (= "xml.clj" (:file-ext %))
+                                 (= "md" (:file-ext %))))))]
+    (let [from    (io/file path)
+          to-path (string/replace path *src-directory* *target-directory*)
+          to      (io/file to-path)]
+      (println "Copying " file-name)
+      (io/make-parents to-path)
+      (io/copy from to))))
+
+
 (defn -main [& args]
   (println "Thinking ...")
   (let [current-dir (get-current-dir)
@@ -248,6 +265,7 @@
     (alter-var-root #'*src-directory* (constantly src-dir))
     (alter-var-root #'*target-directory* (constantly target-dir))
     (empty-public-dir!)
+    (copy-assets!)
     (build-content-items!)
     (build-pages!)
     (System/exit 0)))
