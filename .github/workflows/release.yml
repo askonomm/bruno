@@ -39,6 +39,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prepare java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@4.0
+        with:
+          lein: 'latest'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: paulhatch/semantic-version@v4.0.2
         id: semver
         with:
@@ -73,6 +85,22 @@ jobs:
           body: ${{ steps.package.outputs.content }}
           draft: false
           prerelease: false
+
+      - name: 'Write Upload URL To File'
+        run: |
+          echo "${{steps.create_release.outputs.upload_url}}" > upload_url.txt
+
+      - name: 'Publish Upload URL'
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+          path: 'upload_url.txt'
+
+      - name: 'Publish Upload URL'
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+          path: 'upload_url.txt'
 
       - name: Build a uberjar
         run: lein uberjar
@@ -122,6 +150,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prepare java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@4.0
+        with:
+          lein: 'latest'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Build a uberjar
         run: lein uberjar
 
@@ -144,6 +184,15 @@ jobs:
         with:
           file: bruno
 
+      - name: 'Download Release URL'
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        run: |
+          echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
+
       - name: "Publish"
         uses: actions/upload-artifact@v2-preview
         with:
@@ -156,7 +205,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: bruno
           asset_name: bruno-macos
           asset_content_type: application/octet-stream
