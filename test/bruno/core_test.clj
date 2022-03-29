@@ -70,7 +70,7 @@
 (deftest get-layouts-test
   (testing "Getting layouts"
     (is (= [{:name     "default"
-             :contents "(declare ^:dynamic post)\n(declare ^:dynamic partial)\n\n[:div\n (partial \"header\" {'test \"this\"})\n [:div.post\n  [:h2 (:title post)]\n  [:div.entry (:entry post)]]]"}]
+             :contents "(declare post)\n(declare load-partial)\n\n[:div\n (load-partial \"header\" {'test \"this\"})\n [:div.post\n  [:h2 (:title post)]\n  [:div.entry (:entry post)]]]"}]
            (core/get-layouts)))))
 
 
