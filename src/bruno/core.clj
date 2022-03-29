@@ -231,6 +231,13 @@
                                                     'page                       page})}))))))
 
 
+(defn empty-public-dir!
+  "Deletes all files and folders from the `*target-directory*`."
+  []
+  (doseq [{:keys [path]} (scan *target-directory*)]
+    (io/delete-file path)))
+
+
 (defn -main [& args]
   (println "Thinking ...")
   (let [current-dir (get-current-dir)
@@ -240,6 +247,7 @@
         target-dir  (str current-dir File/separatorChar "public")]
     (alter-var-root #'*src-directory* (constantly src-dir))
     (alter-var-root #'*target-directory* (constantly target-dir))
+    (empty-public-dir!)
     (build-content-items!)
     (build-pages!)
     (System/exit 0)))
