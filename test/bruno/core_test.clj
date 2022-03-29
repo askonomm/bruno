@@ -6,7 +6,7 @@
     [clojure.string :as string])
   (:import (java.io File)))
 
-(alter-var-root #'core/*directory* (constantly (.getCanonicalPath (io/file "./resources/test"))))
+(alter-var-root #'core/*src-directory* (constantly (.getCanonicalPath (io/file "./resources/test"))))
 
 (deftest triml-test
   (testing "Trimming one character from the left of a string"
@@ -95,8 +95,8 @@
 
 (deftest slug-from-path-test
   (testing "Getting a slug from path"
-    (is (= "hello-world" (core/slug-from-path (str core/*directory* File/separatorChar "hello-world.md"))))
-    (is (= "blog/hello-world" (core/slug-from-path (str core/*directory* File/separatorChar "blog" File/separatorChar "hello-world.md"))))))
+    (is (= "hello-world" (core/slug-from-path (str core/*src-directory* File/separatorChar "hello-world.md"))))
+    (is (= "blog/hello-world" (core/slug-from-path (str core/*src-directory* File/separatorChar "blog" File/separatorChar "hello-world.md"))))))
 
 
 (deftest load-partial-test
