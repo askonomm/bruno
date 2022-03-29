@@ -1,3 +1,3 @@
-(declare ^:dynamic test)
+(declare test)
 
 [:div.header test]

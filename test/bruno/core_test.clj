@@ -1,10 +1,12 @@
 (ns bruno.core-test
   (:require
     [clojure.test :refer [deftest testing is]]
+    [clojure.java.io :as io]
     [bruno.core :as core]
-    [clojure.string :as string]))
+    [clojure.string :as string])
+  (:import (java.io File)))
 
-(alter-var-root #'core/*directory* (constantly "./resources/test"))
+(alter-var-root #'core/*directory* (constantly (.getCanonicalPath (io/file "./resources/test"))))
 
 (deftest triml-test
   (testing "Trimming one character from the left of a string"
@@ -89,3 +91,14 @@
 (deftest parse-md-entry-test
   (testing "Rudimentary markdown compilation."
     (is (= "<p>hello</p>" (core/parse-md-entry "hello")))))
+
+
+(deftest slug-from-path-test
+  (testing "Getting a slug from path"
+    (is (= "hello-world" (core/slug-from-path (str core/*directory* File/separatorChar "hello-world.md"))))
+    (is (= "blog/hello-world" (core/slug-from-path (str core/*directory* File/separatorChar "blog" File/separatorChar "hello-world.md"))))))
+
+
+(deftest load-partial-test
+  (testing "Loading a partial"
+    (is (= "<div class=\"header\">hello</div>" (core/load-partial "header" {'test "hello"})))))

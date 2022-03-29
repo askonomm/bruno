@@ -178,6 +178,7 @@
 
 (def bindings
   {'document     document
+   'xml          hpage/xml-declaration
    'include-js   hpage/include-js
    'include-css  hpage/include-css
    'load-partial load-partial})

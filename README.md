@@ -13,7 +13,7 @@ generator for those who love Clojure.
 curl -s https://raw.githubusercontent.com/askonomm/bruno/master/install.sh | bash -s
 ```
 
-You can then run Bruno as `./bruno`, given that the Bruno executable is in the current workign directory.
+You can then run Bruno as `./bruno`, given that the Bruno executable is in the current working directory.
 
 ### Globally
 
