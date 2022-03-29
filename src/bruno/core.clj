@@ -51,6 +51,10 @@
                (scan %)
                {:path      (.getCanonicalPath (io/file %))
                 :file-name (.getName (io/file %))
+                :file-ext  (->> (-> (.getName (io/file %))
+                                    (string/split #"\.")
+                                    next)
+                                (string/join "."))
                 :mtime     (.lastModified (io/file %))}))
        flatten
        vec))
@@ -124,10 +128,13 @@
   ""
   []
   (pmap (fn [item]
-          {:slug     (str (slug-from-path (:path item)) ".html")
-           :contents (slurp (:path item))})
+          (let [ext (-> (:file-ext item)
+                        (string/replace ".clj" ""))]
+            {:slug     (str (slug-from-path (:path item)) "." ext)
+             :contents (slurp (:path item))}))
         (->> (scan *directory*)
-             (filter #(string/ends-with? (:path %) ".html.clj")))))
+             (filter #(or (= (:file-ext %) "html.clj")
+                          (= (:file-ext %) "xml.clj"))))))
 
 
 (defn get-layouts
