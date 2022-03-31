@@ -102,3 +102,8 @@
 (deftest load-partial-test
   (testing "Loading a partial"
     (is (= "<div class=\"header\">hello</div>" (core/load-partial "header" {'test "hello"})))))
+
+
+(deftest format-date-test
+  (testing "Formatting year-month-day"
+    (is (= "28 Dec, 2021" (core/format-date "2021-12-28" "dd MMM, YYYY")))))

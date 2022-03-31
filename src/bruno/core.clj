@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [clojure.java.io :as io]
     [clojure.java.shell :as sh]
-    [clojure.instant :as inst]
     [hiccup.core :as h]
     [hiccup.page :as hpage]
     [sci.core :as sci]
@@ -12,7 +11,8 @@
     (java.io File)
     (java.util Date)
     (java.time.format DateTimeFormatter)
-    (java.time ZoneId))
+    (java.time ZoneId)
+    (java.text SimpleDateFormat))
   (:gen-class))
 
 
@@ -205,16 +205,15 @@
 
 (defn format-date
   "Format given `date` string according to `format`."
-  [date format]
-  (try
-    (let [date      (-> (.toInstant ^Date (inst/read-instant-date date))
-                        (.atZone (ZoneId/systemDefault))
-                        (.toLocalDateTime))
-          formatter (DateTimeFormatter/ofPattern format)]
-      (.format formatter date))
-    (catch Exception e
-      (println (.getMessage e))
-      "")))
+  ([date format]
+   (format-date date format "YYYY-mm-dd"))
+  ([date format parse-format]
+   (try
+     (let [dt (.parse (SimpleDateFormat. parse-format) date)]
+       (.format (SimpleDateFormat. format) dt))
+     (catch Exception e
+       (println (.getMessage e))
+       ""))))
 
 
 (def bindings
