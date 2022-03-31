@@ -9,9 +9,7 @@
     [markdown.core :as md])
   (:import
     (java.io File)
-    (java.util Date)
-    (java.time.format DateTimeFormatter)
-    (java.time ZoneId)
+    (java.util Date TimeZone)
     (java.text SimpleDateFormat))
   (:gen-class))
 
@@ -204,13 +202,25 @@
 
 
 (defn format-date
-  "Format given `date` string according to `format`."
+  "Format given `date` string according to `format`.
+
+  Optionally takes in `timezone` as the third argument,
+  which must adhere to the TimeZone ID.
+
+  Optionally takes in `parse-format` as the fourth argument,
+  which must correspond to the format that the input `date` is in,
+  in order for `SimpleDateFormat` to make sense of the string and
+  successfully turn it into a date object. This defaults to `YYYY-mm-dd`."
   ([date format]
-   (format-date date format "YYYY-mm-dd"))
-  ([date format parse-format]
+   (format-date date format "UTC" "YYYY-mm-dd"))
+  ([date format timezone]
+   (format-date date format timezone "YYYY-mm-dd"))
+  ([date format timezone parse-format]
    (try
-     (let [dt (.parse (SimpleDateFormat. parse-format) date)]
-       (.format (SimpleDateFormat. format) dt))
+     (let [df (SimpleDateFormat. parse-format)]
+       (.setTimeZone df (TimeZone/getTimeZone ^String timezone))
+       (let [dt (.parse df date)]
+         (.format (SimpleDateFormat. format) dt)))
      (catch Exception e
        (println (.getMessage e))
        ""))))
