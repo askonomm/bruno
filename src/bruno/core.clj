@@ -3,11 +3,16 @@
     [clojure.string :as string]
     [clojure.java.io :as io]
     [clojure.java.shell :as sh]
+    [clojure.instant :as inst]
     [hiccup.core :as h]
     [hiccup.page :as hpage]
     [sci.core :as sci]
     [markdown.core :as md])
-  (:import (java.io File))
+  (:import
+    (java.io File)
+    (java.util Date)
+    (java.time.format DateTimeFormatter)
+    (java.time ZoneId))
   (:gen-class))
 
 
@@ -193,9 +198,23 @@
            ; sort-by
            (:sort-by opts) (sort-by #(get % (:sort-by opts)))
            ; order
-           (= "desc" (:order opts)) reverse
+           (= :desc (:order opts)) reverse
            ; group by
            (:group-by opts) (group-by (:group-by opts))))
+
+
+(defn format-date
+  "Format given `date` string according to `format`."
+  [date format]
+  (try
+    (let [date      (-> (.toInstant ^Date (inst/read-instant-date date))
+                        (.atZone (ZoneId/systemDefault))
+                        (.toLocalDateTime))
+          formatter (DateTimeFormatter/ofPattern format)]
+      (.format formatter date))
+    (catch Exception e
+      (println (.getMessage e))
+      "")))
 
 
 (def bindings
@@ -204,7 +223,8 @@
    'include-js   hpage/include-js
    'include-css  hpage/include-css
    'load-partial load-partial
-   'content      content-composer})
+   'content      content-composer
+   'format-date  format-date})
 
 
 (def namespaces
