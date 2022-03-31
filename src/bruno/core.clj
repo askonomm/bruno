@@ -117,14 +117,16 @@
 
 (defn get-content-items
   "Gets a collection of content items."
-  []
-  (pmap (fn [item]
-          (let [file-contents (slurp (:path item))]
-            (merge (parse-md-metadata file-contents)
-                   {:slug  (slug-from-path (:path item))
-                    :entry (parse-md-entry file-contents)})))
-        (->> (scan *src-directory*)
-             (filter #(string/ends-with? (:path %) ".md")))))
+  ([]
+   (get-content-items *src-directory*))
+  ([directory]
+   (pmap (fn [item]
+           (let [file-contents (slurp (:path item))]
+             (merge (parse-md-metadata file-contents)
+                    {:slug  (slug-from-path (:path item))
+                     :entry (parse-md-entry file-contents)})))
+         (->> (scan directory)
+              (filter #(string/ends-with? (:path %) ".md"))))))
 
 
 (defn get-pages
@@ -182,12 +184,31 @@
     (hpage/html5 opts contents)))
 
 
+(defn content-composer
+  "Composes data sets from available Markdown files."
+  [opts]
+  (cond->> (if (:from opts)
+             (get-content-items (str *src-directory* File/separatorChar (:from opts)))
+             (get-content-items))
+           ; sort-by
+           (:sort-by opts) (sort-by #(get % (:sort-by opts)))
+           ; order
+           (= "desc" (:order opts)) reverse
+           ; group by
+           (:group-by opts) (group-by (:group-by opts))))
+
+
 (def bindings
   {'document     document
    'xml          hpage/xml-declaration
    'include-js   hpage/include-js
    'include-css  hpage/include-css
-   'load-partial load-partial})
+   'load-partial load-partial
+   'content      content-composer})
+
+
+(def namespaces
+  {'clojure.string {'split string/split}})
 
 
 (defn build-content-items!
@@ -209,9 +230,10 @@
         (io/make-parents write-path)
         (spit write-path (h/html (sci/eval-string
                                    (:contents layout)
-                                   {:bindings (merge bindings
-                                                     {'post    item
-                                                      'is-post true})})))))))
+                                   {:bindings   (merge bindings
+                                                       {'post    item
+                                                        'is-post true})
+                                    :namespaces namespaces})))))))
 
 
 (defn build-pages!
@@ -225,10 +247,11 @@
       (io/make-parents write-path)
       (spit write-path (h/html (sci/eval-string
                                  (:contents page)
-                                 {:bindings (merge bindings
-                                                   {'is-page                    true
-                                                    (symbol "is-" (:slug page)) true
-                                                    'page                       page})}))))))
+                                 {:bindings   (merge bindings
+                                                     {'is-page                    true
+                                                      (symbol "is-" (:slug page)) true
+                                                      'page                       page})
+                                  :namespaces namespaces}))))))
 
 
 (defn empty-public-dir!
