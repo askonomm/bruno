@@ -205,7 +205,7 @@
   "Format given `date` string according to `format`.
 
   Optionally takes in `timezone` as the third argument,
-  which must adhere to the TimeZone ID.
+  which must adhere to the TimeZone ID. This defaults to UTC.
 
   Optionally takes in `parse-format` as the fourth argument,
   which must correspond to the format that the input `date` is in,
@@ -217,10 +217,11 @@
    (format-date date format timezone "YYYY-mm-dd"))
   ([date format timezone parse-format]
    (try
-     (let [df (SimpleDateFormat. parse-format)]
+     (let [parsed-df (SimpleDateFormat. parse-format)
+           parsed-dt (.parse parsed-df date)
+           df        (SimpleDateFormat. format)]
        (.setTimeZone df (TimeZone/getTimeZone ^String timezone))
-       (let [dt (.parse df date)]
-         (.format (SimpleDateFormat. format) dt)))
+       (.format df parsed-dt))
      (catch Exception e
        (println (.getMessage e))
        ""))))

@@ -106,4 +106,4 @@
 
 (deftest format-date-test
   (testing "Formatting year-month-day"
-    (is (= "28 Dec, 2021" (core/format-date "2021-12-28" "dd MMM, YYYY")))))
+    (is (= "28 Dec, 2021" (core/format-date "2021-12-28" "dd MMM, YYYY" "Europe/Madrid")))))
