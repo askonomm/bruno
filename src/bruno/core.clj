@@ -19,7 +19,7 @@
 (def ^:dynamic *src-directory* nil)
 (def ^:dynamic *target-directory* nil)
 
-(declare bindings)
+(declare sci-opts)
 
 
 (defn triml
@@ -177,8 +177,8 @@
                              "_partials"
                              File/separatorChar
                              name ".clj"))]
-     (h/html (sci/eval-string partial {:bindings (merge bindings
-                                                        local-bindings)})))))
+     (h/html (sci/eval-string partial (merge-with into sci-opts
+                                                  {:bindings local-bindings}))))))
 
 
 (defn document
@@ -227,18 +227,14 @@
        ""))))
 
 
-(def bindings
-  {'document     document
-   'xml          hpage/xml-declaration
-   'include-js   hpage/include-js
-   'include-css  hpage/include-css
-   'load-partial load-partial
-   'content      content-composer
-   'format-date  format-date})
-
-
-(def namespaces
-  {'clojure.string {'split string/split}})
+(def sci-opts
+  {:bindings   {'document     document
+                'include-js   hpage/include-js
+                'include-css  hpage/include-css
+                'load-partial load-partial
+                'content      content-composer
+                'format-date  format-date}
+   :namespaces {'clojure.string {'split string/split}}})
 
 
 (defn build-content-items!
@@ -260,10 +256,9 @@
         (io/make-parents write-path)
         (spit write-path (h/html (sci/eval-string
                                    (:contents layout)
-                                   {:bindings   (merge bindings
-                                                       {'post    item
-                                                        'is-post true})
-                                    :namespaces namespaces})))))))
+                                   (merge-with into sci-opts
+                                               {:bindings {'post    item
+                                                           'is-post true}}))))))))
 
 
 (defn build-pages!
@@ -277,11 +272,10 @@
       (io/make-parents write-path)
       (spit write-path (h/html (sci/eval-string
                                  (:contents page)
-                                 {:bindings   (merge bindings
-                                                     {'is-page                    true
-                                                      (symbol "is-" (:slug page)) true
-                                                      'page                       page})
-                                  :namespaces namespaces}))))))
+                                 (merge-with into sci-opts
+                                             {:bindings {'is-page                    true
+                                                         (symbol "is-" (:slug page)) true
+                                                         'page                       page}})))))))
 
 
 (defn empty-public-dir!
