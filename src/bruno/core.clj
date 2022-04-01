@@ -10,7 +10,9 @@
   (:import
     (java.io File)
     (java.util Date TimeZone)
-    (java.text SimpleDateFormat))
+    (java.text SimpleDateFormat)
+    (java.time LocalDate)
+    (java.time.format DateTimeFormatter))
   (:gen-class))
 
 
@@ -215,12 +217,10 @@
    (format-date date format "UTC" "YYYY-mm-dd"))
   ([date format timezone]
    (format-date date format timezone "YYYY-mm-dd"))
-  ([date format timezone parse-format]
+  ([date format _ _]
    (try
-     (let [parsed-df (SimpleDateFormat. parse-format)
-           parsed-dt (.parse parsed-df date)
-           df        (SimpleDateFormat. format)]
-       (.setTimeZone df (TimeZone/getTimeZone ^String timezone))
+     (let [parsed-dt (LocalDate/parse date)
+           df        (DateTimeFormatter/ofPattern format)]
        (.format df parsed-dt))
      (catch Exception e
        (println (.getMessage e))
