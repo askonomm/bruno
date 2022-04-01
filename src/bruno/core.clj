@@ -9,10 +9,9 @@
     [markdown.core :as md])
   (:import
     (java.io File)
-    (java.util Date TimeZone)
-    (java.text SimpleDateFormat)
     (java.time LocalDate)
-    (java.time.format DateTimeFormatter))
+    (java.time.format DateTimeFormatter)
+    (clojure.lang PersistentList))
   (:gen-class))
 
 
@@ -302,6 +301,43 @@
       (io/copy from to))))
 
 
+(defn build!
+  "Builds the static site in `*src-directory*`."
+  []
+  (empty-public-dir!)
+  (copy-assets!)
+  (build-content-items!)
+  (build-pages!))
+
+
+(defn watch!
+  "Runs an infinite loop that checks every 1s for any changes
+  to files, upon which it will call `(build!)`."
+  []
+  (println "Watching ...")
+  (loop [watch-list     (scan *src-directory*)
+         new-watch-list watch-list]
+    (Thread/sleep 1000)
+    (when-not (= watch-list new-watch-list)
+      (build!))
+    (recur new-watch-list
+           (scan *src-directory*))))
+
+
+(defn argcmd
+  "Parses a given list of `args` for a `command` and returns
+  `true` if the command was found. If the command has a
+  subcommand provided, then it will return that instead."
+  [command ^PersistentList args]
+  (when (seq? args)
+    (let [index (.indexOf args command)]
+      (if-not (= -1 index)
+        (if-let [subcommand (nth args (+ index 1) nil)]
+          subcommand
+          true)
+        nil))))
+
+
 (defn -main [& args]
   (println "Thinking ...")
   (let [current-dir (get-current-dir)
@@ -311,8 +347,6 @@
         target-dir  (str current-dir File/separatorChar "public")]
     (alter-var-root #'*src-directory* (constantly src-dir))
     (alter-var-root #'*target-directory* (constantly target-dir))
-    (empty-public-dir!)
-    (copy-assets!)
-    (build-content-items!)
-    (build-pages!)
-    (System/exit 0)))
+    (if (argcmd "watch" args)
+      (watch!)
+      (build!))))
