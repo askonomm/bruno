@@ -36,6 +36,6 @@ You can then run Bruno as `bruno` from anywhere.
 
 ## Example sites
 
-Here's a list of example sites, and their source code, who use Bruno.
+Here's a list of example sites that use Bruno (open a PR to list yours).
 
 - [Bien](https://bien.ee) ([source code](https://github.com/askonomm/bien.ee))

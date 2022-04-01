@@ -11,7 +11,8 @@
     (java.io File)
     (java.time LocalDate)
     (java.time.format DateTimeFormatter)
-    (clojure.lang PersistentList))
+    (clojure.lang PersistentList)
+    (java.util TimeZone))
   (:gen-class))
 
 
@@ -213,11 +214,10 @@
   in order for `SimpleDateFormat` to make sense of the string and
   successfully turn it into a date object. This defaults to `YYYY-mm-dd`."
   ([date format]
-   (format-date date format "UTC" "YYYY-mm-dd"))
+   (format-date date format "UTC"))
   ([date format timezone]
-   (format-date date format timezone "YYYY-mm-dd"))
-  ([date format _ _]
    (try
+     (TimeZone/setDefault (TimeZone/getTimeZone ^String timezone))
      (let [parsed-dt (LocalDate/parse date)
            df        (DateTimeFormatter/ofPattern format)]
        (.format df parsed-dt))
