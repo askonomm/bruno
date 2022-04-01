@@ -1,9 +1,10 @@
-[![Release](https://github.com/askonomm/bruno/actions/workflows/release.yml/badge.svg)](https://github.com/askonomm/bruno/actions/workflows/release.yml)
-
 # Bruno
 
-A static site generator written in Clojure that uses Clojure for templating as well thus being the perfect static site
-generator for those who love Clojure.
+[![Release](https://github.com/askonomm/bruno/actions/workflows/release.yml/badge.svg)](https://github.com/askonomm/bruno/actions/workflows/release.yml)
+
+A Jekyll-esque static site generator written in Clojure that, unlike most static site generators, uses Clojure for
+templating as well thus being the perfect static site generator for those who love Clojure, or who would love to do
+some _actual_ programming in their templating.
 
 ## Install
 
@@ -25,4 +26,16 @@ You can then run Bruno as `bruno` from anywhere.
 
 ## Usage
 
-To be written.
+- [Directory structure](#)
+- [Content items](#)
+- [Layouts](#)
+- [Pages](#)
+- [Partials](#)
+- [Templating data](#)
+- [Templating helpers](#)
+
+## Example sites
+
+Here's a list of example sites, and their source code, who use Bruno.
+
+- [Bien](https://bien.ee) ([source code](https://github.com/askonomm/bien.ee))
