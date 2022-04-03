@@ -4,7 +4,7 @@
   :license {:name "MIT"
             :url  "https://raw.githubusercontent.com/askonomm/bruno/master/LICENSE.txt"}
   :dependencies [[org.clojure/clojure "1.11.0"]
-                 [markdown-clj "1.10.9"]
+                 [markdown-clj "1.11.0"]
                  [com.github.clj-easy/graal-build-time "0.1.4"]
                  [org.slf4j/slf4j-simple "2.0.0-alpha7"]
                  [org.babashka/sci "0.3.4"]
