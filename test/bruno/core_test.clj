@@ -16,11 +16,7 @@
     (is (= "ola" (core/triml "hhhhola" "h"))))
 
   (testing "Trimming a character from the left of a string that isn't there"
-    (is (= "hola" (core/triml "hola" "b"))))
-
-  (testing "Trimming a character from the left of a string that is of wrong type"
-    (is (= "hola" (core/triml "hola" nil)))))
-
+    (is (= "hola" (core/triml "hola" "b")))))
 
 (deftest trimr-test
   (testing "Trimming one character from the right of a string"
@@ -30,11 +26,7 @@
     (is (= "hol" (core/trimr "holaaaa" "a"))))
 
   (testing "Trimming a character from the right of a string that isn't there"
-    (is (= "hola" (core/trimr "hola" "b"))))
-
-  (testing "Trimming a character from the right of a string that is of wrong type"
-    (is (= "hola" (core/trimr "hola" nil)))))
-
+    (is (= "hola" (core/trimr "hola" "b")))))
 
 (deftest scan-test
   (testing "Getting sample file information"
@@ -48,7 +40,6 @@
       (is (string? (:path (last data))))
       (is (int? (:mtime (last data)))))))
 
-
 (deftest get-content-items-test
   (testing "Getting content items"
     (is (= [{:title "This is a test file"
@@ -59,13 +50,11 @@
              :entry "<p>Just another test file. Again.</p>"}]
            (core/get-content-items)))))
 
-
 (deftest get-pages-test
   (testing "Getting pages"
     (is (= [{:slug     "test-page.html"
              :contents "[:div \"This is a test page.\"]"}]
            (core/get-pages)))))
-
 
 (deftest get-layouts-test
   (testing "Getting layouts"
@@ -73,10 +62,10 @@
              :contents "(declare post)\n(declare load-partial)\n\n[:div\n (load-partial \"header\" {'test \"this\"})\n [:div.post\n  [:h2 (:title post)]\n  [:div.entry (:entry post)]]]"}]
            (core/get-layouts)))))
 
-
 (deftest parse-md-metadata-test
   (testing "One meta-data item"
-    (is (= {:this "that"} (core/parse-md-metadata "---\nthis: that\n---"))))
+    (is (= {:this "that"}
+           (core/parse-md-metadata "---\nthis: that\n---"))))
   (testing "Multiple meta-data items"
     (is (= {:this    "that"
             :hip     "hop"
@@ -87,23 +76,24 @@
     (is (= {} (core/parse-md-metadata "---\n---\nHello")))
     (is (= {} (core/parse-md-metadata "---\nHello")))))
 
-
 (deftest parse-md-entry-test
   (testing "Rudimentary markdown compilation."
-    (is (= "<p>hello</p>" (core/parse-md-entry "hello")))))
-
+    (is (= "<p>hello</p>"
+           (core/parse-md-entry "hello")))))
 
 (deftest slug-from-path-test
   (testing "Getting a slug from path"
-    (is (= "hello-world" (core/slug-from-path (str core/*src-directory* File/separatorChar "hello-world.md"))))
-    (is (= "blog/hello-world" (core/slug-from-path (str core/*src-directory* File/separatorChar "blog" File/separatorChar "hello-world.md"))))))
-
+    (is (= "hello-world"
+           (core/slug-from-path (str core/*src-directory* File/separatorChar "hello-world.md"))))
+    (is (= "blog/hello-world"
+           (core/slug-from-path (str core/*src-directory* File/separatorChar "blog" File/separatorChar "hello-world.md"))))))
 
 (deftest load-partial-test
   (testing "Loading a partial"
-    (is (= "<div class=\"header\">hello</div>" (core/load-partial "header" {'test "hello"})))))
-
+    (is (= "<div class=\"header\">hello</div>"
+           (core/load-partial "header" {'test "hello"})))))
 
 (deftest format-date-test
   (testing "Formatting year-month-day"
-    (is (= "07 Sep, 2021" (core/format-date "2021-09-07" "dd MMM, YYYY" "Europe/Madrid")))))
+    (is (= "07 Sep, 2021"
+           (core/format-date "2021-09-07" "dd MMM, YYYY" "Europe/Madrid")))))
