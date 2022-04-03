@@ -188,14 +188,15 @@
 
 (defn format-date
   "Format given `date` string according to `format`.
-
-  Optionally takes in `timezone` as the third argument,
-  which must adhere to the TimeZone ID. This defaults to UTC.
-
-  Optionally takes in `parse-format` as the fourth argument,
-  which must correspond to the format that the input `date` is in,
-  in order for `SimpleDateFormat` to make sense of the string and
-  successfully turn it into a date object. This defaults to `YYYY-mm-dd`."
+   Optionally takes in `timezone` as the third argument,
+   which must adhere to the TimeZone ID. This defaults to UTC.
+   
+   Optionally takes in `parse-format` as the fourth argument, 
+   which must correspond to the format that the input `date` 
+   is in, in order for `SimpleDateFormat` to make sense of the
+   string and successfully turn it into a date object. 
+   
+   This defaults to `YYYY-mm-dd`."
   ([date format]
    (format-date date format "UTC"))
   ([date format timezone]
@@ -218,9 +219,9 @@
    :namespaces {'clojure.string {'split string/split}}})
 
 (defn build-content-items!
-  "Builds all the content items with the layout specified
-  in the individual content items, or with the \"default\"
-  layout if none was found in the item."
+  "Builds all the content items with the layout specified 
+   in the individual content items, or with the \"default\" 
+   layout if none was found in the item."
   []
   (let [layouts (get-layouts)]
     (doseq [item (get-content-items)]
