@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.11.0"]
                  [com.github.askonomm/clarktown "1.0.2"]
                  [com.github.clj-easy/graal-build-time "0.1.4"]
+                 [nubank/matcher-combinators "3.4.0"]
                  [org.slf4j/slf4j-simple "2.0.0-alpha7"]
                  [org.babashka/sci "0.3.4"]
                  [hiccup "1.0.5"]]

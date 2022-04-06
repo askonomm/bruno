@@ -2,6 +2,8 @@
   (:require
     [clojure.test :refer [deftest testing is]]
     [clojure.java.io :as io]
+    [matcher-combinators.test :refer [match?]]
+    [matcher-combinators.matchers :as m]
     [bruno.core :as core]
     [clojure.string :as string])
   (:import (java.io File)))
@@ -42,13 +44,13 @@
 
 (deftest get-content-items-test
   (testing "Getting content items"
-    (is (= [{:title "This is a test file"
-             :slug  "test-file"
-             :entry "<p>And this is a test content.</p>"}
-            {:title "This is a test file 2"
-             :slug  "test-dir/test-file-2"
-             :entry "<p>Just another test file. Again.</p>"}]
-           (core/get-content-items)))))
+    (is (match? (m/in-any-order [{:title "This is a test file"
+                                  :slug  "test-file"
+                                  :entry "<p>And this is a test content.</p>"}
+                                 {:title "This is a test file 2"
+                                  :slug  "test-dir/test-file-2"
+                                  :entry "<p>Just another test file. Again.</p>"}])
+                (core/get-content-items)))))
 
 (deftest get-pages-test
   (testing "Getting pages"
