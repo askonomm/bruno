@@ -6,7 +6,7 @@
    [hiccup.core :as h]
    [hiccup.page :as hpage]
    [sci.core :as sci]
-   [markdown.core :as md])
+   [clarktown.core :as clarktown])
   (:import
    (java.io File)
    (java.time LocalDate)
@@ -84,7 +84,7 @@
   (-> contents
       (string/replace #"(?s)^---(.*?)---*" "")
       (string/trim)
-      (md/md-to-html-string)))
+      (clarktown/render)))
 
 (defn slug-from-path
   "Takes in a full `path` to a file and returns the relative URL slug
