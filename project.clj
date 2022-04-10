@@ -3,8 +3,8 @@
   :url "https://github.com/askonomm/bruno"
   :license {:name "MIT"
             :url  "https://raw.githubusercontent.com/askonomm/bruno/master/LICENSE.txt"}
-  :dependencies [[org.clojure/clojure "1.11.0"]
-                 [com.github.askonomm/clarktown "1.0.3"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
+                 [com.github.askonomm/clarktown "1.1.0"]
                  [com.github.clj-easy/graal-build-time "0.1.4"]
                  [nubank/matcher-combinators "3.4.0"]
                  [org.slf4j/slf4j-simple "2.0.0-alpha7"]
