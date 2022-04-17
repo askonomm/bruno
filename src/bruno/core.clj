@@ -19,21 +19,24 @@
 (def ^:dynamic *target-directory* nil)
 (declare sci-opts)
 
+
 (defn triml
   "Trims the given `trim-char` from the left of `input`."
   [input trim-char]
   (if (string/starts-with? input trim-char)
-    (recur (subs input 1)
+    (triml (subs input 1)
            trim-char)
     input))
+
 
 (defn trimr
   "Trims away the given `trim-char` from the right of `input`."
   [input trim-char]
   (if (string/ends-with? input trim-char)
-    (recur (subs input 0 (- (count input) 1))
+    (trimr (subs input 0 (- (count input) 1))
            trim-char)
     input))
+
 
 (defn scan
   "Scans a given `directory` for any and all files (recursively)
@@ -55,6 +58,7 @@
        flatten
        vec))
 
+
 (defn- parse-md-metadata-line
   "Parses each YAML metadata line into a map of k:v."
   [line]
@@ -68,6 +72,7 @@
     {(keyword meta-key)
      meta-value}))
 
+
 (defn parse-md-metadata
   "Takes in a given `content` as the entirety of a Markdown
   content file, and then parses YAML metadata from it."
@@ -76,6 +81,7 @@
     (let [lines (remove #(= "---" %) (string/split-lines (first match)))]
       (into {} (map #(parse-md-metadata-line %) lines)))
     {}))
+
 
 (defn parse-md-entry
   "Takes in a given `content` as the entirety of a Markdown
@@ -86,6 +92,7 @@
       (string/trim)
       (clarktown/render)))
 
+
 (defn slug-from-path
   "Takes in a full `path` to a file and returns the relative URL slug
   from it."
@@ -95,6 +102,7 @@
         (triml "/")
         (string/split #"\.")
         first)))
+
 
 (defn get-content-items
   "Gets a collection of content items."
@@ -109,6 +117,7 @@
          (->> (scan directory)
               (filter #(string/ends-with? (:path %) ".md"))))))
 
+
 (defn get-pages
   "Gets a collection of pages."
   []
@@ -121,6 +130,7 @@
              (filter #(or (= (:file-ext %) "html.clj")
                           (= (:file-ext %) "xml.clj"))))))
 
+
 (defn get-layouts
   "Gets a collection of layouts."
   []
@@ -132,12 +142,14 @@
         (->> (scan (str *src-directory* File/separatorChar "_layouts"))
              (filter #(string/ends-with? (:path %) ".clj")))))
 
+
 (defn- get-current-dir
   "Returns the current working directory."
   []
   (-> (:out (sh/sh "pwd"))
       (string/replace "\n" "")
       string/trim))
+
 
 (defn- get-src-dir
   "Gets the source directory."
@@ -147,11 +159,13 @@
       (str current-dir File/separatorChar "src")
       current-dir)))
 
+
 (defn- get-target-dir
   "Gets teh target directory."
   []
   (let [current-dir (get-current-dir)]
     (str current-dir File/separatorChar "public")))
+
 
 (defn load-partial
   "Renders a template partial."
@@ -166,12 +180,14 @@
      (h/html (sci/eval-string partial (merge-with into sci-opts
                                                   {:bindings local-bindings}))))))
 
+
 (defn document
   "Wraps `contents` within a valid HTML document."
   [opts & contents]
   (if-not (map? opts)
     (hpage/html5 {} opts contents)
     (hpage/html5 opts contents)))
+
 
 (defn content-composer
   "Composes data sets from available Markdown files."
@@ -185,6 +201,7 @@
     (= :desc (:order opts)) reverse
     ; group by
     (:group-by opts) (group-by (:group-by opts))))
+
 
 (defn format-date
   "Format given `date` string according to `format`.
@@ -209,6 +226,7 @@
        (println (.getMessage e))
        ""))))
 
+
 (def sci-opts
   {:bindings {'document document
               'include-js hpage/include-js
@@ -217,6 +235,7 @@
               'content content-composer
               'format-date format-date}
    :namespaces {'clojure.string {'split string/split}}})
+
 
 (defn build-content-items!
   "Builds all the content items with the layout specified 
@@ -243,6 +262,7 @@
         (io/make-parents write-path)
         (spit write-path html)))))
 
+
 (defn build-pages!
   "Builds all the pages."
   []
@@ -261,11 +281,13 @@
       (io/make-parents write-path)
       (spit write-path html))))
 
+
 (defn empty-public-dir!
   "Deletes all files and folders from the `*target-directory*`."
   []
   (doseq [{:keys [path]} (scan *target-directory*)]
     (io/delete-file path)))
+
 
 (defn copy-assets!
   "Copies all assets to the `*target-directory*`."
@@ -283,6 +305,7 @@
       (io/make-parents to-path)
       (io/copy from to))))
 
+
 (defn build!
   "Builds the static site in `*src-directory*`."
   []
@@ -290,6 +313,7 @@
   (copy-assets!)
   (build-content-items!)
   (build-pages!))
+
 
 (defn watch!
   "Runs an infinite loop that checks every 1s for any changes
@@ -304,6 +328,7 @@
     (recur new-watch-list
            (scan *src-directory*))))
 
+
 (defn argument
   "Parses a given list of `args` for a `command` and returns
   `true` if the command was found. If the command has a
@@ -316,6 +341,7 @@
           subcommand
           true)
         nil))))
+
 
 (defn -main [& args]
   (println "Thinking ...")
