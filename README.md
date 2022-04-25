@@ -38,4 +38,4 @@ You can then run Bruno as `bruno` from anywhere.
 
 Here's a list of example sites that use Bruno (open a PR to list yours).
 
-- [Bien](https://bien.ee) ([source code](https://github.com/askonomm/bien.ee))
+- [Asko Nõmm](https://ano.ee) ([source code](https://github.com/askonomm/ano.ee))
