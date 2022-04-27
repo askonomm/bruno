@@ -234,7 +234,9 @@
               'load-partial load-partial
               'content content-composer
               'format-date format-date}
-   :namespaces {'clojure.string {'split string/split}}})
+   :namespaces {'clojure.core {'prn prn
+                               'println println}
+                'clojure.string {'split string/split}}})
 
 
 (defn build-content-items!
