@@ -236,7 +236,8 @@
               'format-date format-date}
    :namespaces {'clojure.core {'prn prn
                                'println println}
-                'clojure.string {'split string/split}}})
+                'clojure.string {'split string/split}}}
+  :classes {'java.util.Date java.util.Date})
 
 
 (defn build-content-items!
