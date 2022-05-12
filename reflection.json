@@ -1,0 +1,8 @@
+[
+  {
+    "name": "java.util.Date",
+    "allPublicMethods":true,
+    "allPublicFields": true,
+    "allPublicConstructors": true
+  }
+]

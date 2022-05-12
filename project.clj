@@ -16,7 +16,7 @@
   :aliases {"native"
             ["shell"
              "native-image" "--report-unsupported-elements-at-runtime" "--no-fallback"
-             "-jar" "./target/uberjar/bruno.jar"]}
+             "-H:ReflectionConfigurationFiles=reflection.json" "-jar" "./target/uberjar/bruno.jar"]}
   :main bruno.core
   :min-lein-version "2.0.0"
   :target-path "target/%s"
