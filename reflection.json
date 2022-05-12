@@ -4,5 +4,23 @@
     "allPublicMethods":true,
     "allPublicFields": true,
     "allPublicConstructors": true
+  },
+  {
+    "name": "java.util.Calendar",
+    "allPublicMethods":true,
+    "allPublicFields": true,
+    "allPublicConstructors": true
+  },
+  {
+    "name": "java.util.GregorianCalendar",
+    "allPublicMethods":true,
+    "allPublicFields": true,
+    "allPublicConstructors": true
+  },
+  {
+    "name": "java.lang.Integer",
+    "allPublicMethods":true,
+    "allPublicFields": true,
+    "allPublicConstructors": true
   }
 ]

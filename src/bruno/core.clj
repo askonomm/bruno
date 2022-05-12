@@ -237,7 +237,10 @@
    :namespaces {'clojure.core {'prn prn
                                'println println}
                 'clojure.string {'split string/split}}
-   :classes {'java.util.Date java.util.Date}})
+   :classes {'java.util.Date java.util.Date
+             `java.util.Calendar java.util.Calendar
+             'java.util.GregorianCalendar java.util.GregorianCalendar
+             'java.lang.Integer java.lang.Integer}})
 
 
 (defn build-content-items!
