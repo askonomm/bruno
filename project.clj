@@ -4,11 +4,11 @@
   :license {:name "MIT"
             :url  "https://raw.githubusercontent.com/askonomm/bruno/master/LICENSE.txt"}
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [com.github.askonomm/clarktown "2.0.0-alpha8"]
+                 [com.github.askonomm/clarktown "2.0.0"]
                  [com.github.clj-easy/graal-build-time "0.1.4"]
-                 [nubank/matcher-combinators "3.4.0"]
-                 [org.slf4j/slf4j-simple "2.0.0-alpha7"]
-                 [org.babashka/sci "0.3.4"]
+                 [nubank/matcher-combinators "3.8.3"]
+                 [org.slf4j/slf4j-simple "2.0.6"]
+                 [org.babashka/sci "0.7.38"]
                  [hiccup "1.0.5"]]
   :plugins [[lein-auto "0.1.3"]
             [lein-ancient "0.7.0"]
