@@ -33,9 +33,3 @@ You can then run Bruno as `bruno` from anywhere.
 - [Partials](#)
 - [Templating data](#)
 - [Templating helpers](#)
-
-## Example sites
-
-Here's a list of example sites that use Bruno (open a PR to list yours).
-
-- [Asko Nõmm](https://ano.ee) ([source code](https://github.com/askonomm/ano.ee))
